@@ -3,15 +3,32 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { QUESTIONS } from "@/app/const";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { getSessions } from "@/lib/db";
 
 export default function SentimentPage() {
   const router = useRouter();
   const [sentiment, setSentiment] = useState<any>(null);
   useEffect(() => {
-    fetch("/api/sentiment")
-      .then((r) => r.json())
-      .then(setSentiment);
+    getSessions().then((all) => {
+      const last30 = all.slice(-30);
+      const avgScores = QUESTIONS.map((q) => {
+        let scores: number[] = [];
+        last30.forEach((session: any) => {
+          const resp = session.responses?.[q];
+          if (resp && Array.isArray(resp.sentiment)) {
+            resp.sentiment.forEach((s: any) => {
+              if (s.label === "POSITIVE") scores.push(s.score);
+              else if (s.label === "NEGATIVE") scores.push(-Math.abs(s.score));
+            });
+          }
+        });
+        return scores.length > 0
+          ? scores.reduce((a, b) => a + b, 0) / scores.length
+          : 0;
+      });
+      setSentiment({ avgScores });
+    });
   }, []);
   if (!sentiment)
     return (

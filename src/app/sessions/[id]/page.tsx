@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { QUESTIONS } from "@/app/const";
+import { getSessions, updateSession, deleteSession } from "@/lib/db";
+import { getSentiment } from "@/lib/sentiment";
 
 export default function SessionDetail() {
   const router = useRouter();
@@ -14,17 +16,14 @@ export default function SessionDetail() {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
-    fetch("/api/sessions")
-      .then((r) => r.json())
-      .then((d) => {
-        const s = d.sessions.find((x: any) => x.id == id);
-        if (s) {
-          setSession(s);
-          // Convert responses object to answers array
-          const ansArr = QUESTIONS.map((q) => s.responses[q]?.answer || "");
-          setAnswers(ansArr);
-        }
-      });
+    getSessions().then((all) => {
+      const s = all.find((x: any) => x.id == id);
+      if (s) {
+        setSession(s);
+        const ansArr = QUESTIONS.map((q) => s.responses[q]?.answer || "");
+        setAnswers(ansArr);
+      }
+    });
   }, [id]);
 
   const handleChange = (i: number, val: string) => {
@@ -36,11 +35,20 @@ export default function SessionDetail() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    await fetch("/api/sessions", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: session.id, answers }),
-    });
+    const updated = { ...session };
+
+    await Promise.all(
+      QUESTIONS.map(async (q, i) => {
+        const sentiment = await getSentiment(answers[i]);
+        updated.responses[q] = {
+          ...updated.responses[q],
+          answer: answers[i],
+          sentiment,
+        };
+      }),
+    );
+
+    await updateSession(updated);
     setTimeout(() => setLoading(false), 1000);
     router.refresh();
   };
@@ -48,11 +56,7 @@ export default function SessionDetail() {
   const handleDelete = async (e: any) => {
     e.preventDefault();
     setDeleteLoading(true);
-    await fetch("/api/sessions", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: session.id }),
-    });
+    await deleteSession(session.id);
     setTimeout(() => setDeleteLoading(false), 1000);
     router.push("/sessions");
   };

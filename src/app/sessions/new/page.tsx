@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { QUESTIONS } from "@/app/const";
+import { addSession } from "@/lib/db";
+import { getSentiment } from "@/lib/sentiment";
 
 export default function NewSession() {
   const [answers, setAnswers] = useState<string[]>(Array(5).fill(""));
@@ -17,11 +19,26 @@ export default function NewSession() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
-    await fetch("/api/sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ answers }),
-    });
+    // Create session object
+    const id = crypto.randomUUID();
+    const responses: any = {};
+
+    await Promise.all(
+      QUESTIONS.map(async (q, i) => {
+        const sentiment = await getSentiment(answers[i]);
+        responses[q] = {
+          answer: answers[i],
+          sentiment,
+        };
+      }),
+    );
+
+    const session = {
+      id,
+      timestamp: new Date().toISOString(),
+      responses,
+    };
+    await addSession(session);
     setTimeout(() => setLoading(false), 500);
     router.push("/sessions");
   };

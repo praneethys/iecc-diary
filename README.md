@@ -1,5 +1,7 @@
 This project is a privacy-focused diary web app built with Next.js and React. It allows users to record answers to five reflective questions about their Inner Engineering journey, view and edit past sessions, and track sentiment statistics over time. All diary data is stored locally in the browser using IndexedDB, ensuring complete data privacy — no information is sent to any server. The app features a modern, responsive UI styled with Tailwind CSS and provides a seamless, standalone experience for each user.
 
+The app leverages Machine Learning for analyzing sentiment in user's responses.
+
 ## Getting Started
 
 First, run the development server:

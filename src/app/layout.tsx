@@ -39,11 +39,12 @@ export default function RootLayout({
             </Link>
             <div className="space-x-4">
               <Link
-                href="/sessions"
+                href="/"
                 className="text-white hover:text-blue-200 font-medium flex items-center gap-2"
                 aria-label="Home"
               >
                 <svg
+                  aria-label="Home"
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
                   fill="none"
@@ -63,6 +64,24 @@ export default function RootLayout({
         </nav>
         <main className="min-h-[80vh]">{children}</main>
       </body>
+      <footer className="w-full bg-gray-200 dark:bg-gray-800 py-4 mt-8">
+        <div className="max-w-4xl mx-auto text-center text-gray-600 dark:text-gray-400">
+          <p className="mb-2">
+            Learn more about the{" "}
+            <a
+              href="https://isha.sadhguru.org/us/en/inner-engineering"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 dark:text-blue-400 underline hover:text-blue-900 dark:hover:text-blue-200"
+            >
+              Inner Engineering program
+            </a>
+          </p>
+          <p className="text-sm">
+            &copy; {new Date().getFullYear()} Praneeth Yerrapragada
+          </p>
+        </div>
+      </footer>
     </html>
   );
 }

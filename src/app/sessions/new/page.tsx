@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { QUESTIONS } from "@/app/const";
 import { addSession } from "@/lib/db";
@@ -39,7 +39,7 @@ export default function NewSession() {
       responses,
     };
     await addSession(session);
-    setTimeout(() => setLoading(false), 500);
+    setLoading(false);
     router.push("/sessions");
   };
   return (
@@ -72,14 +72,15 @@ export default function NewSession() {
       </div>
       <form onSubmit={handleSubmit} className="space-y-6">
         {QUESTIONS.map((q, i) => (
-          <div key={i} className="flex flex-col">
-            <label className="font-medium text-gray-800 dark:text-gray-200 mb-2 text-base">
+          <div key={q} className="flex flex-col">
+            <label className="font-medium text-gray-800 dark:text-gray-200 mb-2 text-base" htmlFor={q}>
               {q}
             </label>
-            <textarea
+            <input
+              id={q}
+              type="textarea"
               value={answers[i]}
               onChange={(e) => handleChange(i, e.target.value)}
-              rows={3}
               className="rounded-lg border border-gray-300 dark:border-gray-700 p-3 text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
               placeholder="Your answer..."
             />

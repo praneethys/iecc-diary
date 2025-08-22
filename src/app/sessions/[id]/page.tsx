@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { QUESTIONS } from "@/app/const";
 import { getSessions, updateSession, deleteSession } from "@/lib/db";
@@ -17,7 +17,7 @@ export default function SessionDetail() {
 
   useEffect(() => {
     getSessions().then((all) => {
-      const s = all.find((x: any) => x.id == id);
+      const s = all.find((x: any) => x.id === id);
       if (s) {
         setSession(s);
         const ansArr = QUESTIONS.map((q) => s.responses[q]?.answer || "");
@@ -49,7 +49,7 @@ export default function SessionDetail() {
     );
 
     await updateSession(updated);
-    setTimeout(() => setLoading(false), 1000);
+    setLoading(false);
     router.refresh();
   };
 
@@ -57,7 +57,7 @@ export default function SessionDetail() {
     e.preventDefault();
     setDeleteLoading(true);
     await deleteSession(session.id);
-    setTimeout(() => setDeleteLoading(false), 1000);
+    setDeleteLoading(false);
     router.push("/sessions");
   };
 
@@ -102,10 +102,10 @@ export default function SessionDetail() {
             <label className="font-medium text-gray-800 dark:text-gray-200 mb-2 text-base">
               {q}
             </label>
-            <textarea
+            <input
+              type="textarea"
               value={answers[i]}
               onChange={(e) => handleChange(i, e.target.value)}
-              rows={3}
               className="rounded-lg border border-gray-300 dark:border-gray-700 p-3 text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
               placeholder="Your answer..."
             />

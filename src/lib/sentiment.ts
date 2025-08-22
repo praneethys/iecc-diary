@@ -1,4 +1,4 @@
-import { pipeline, TextClassificationOutput } from "@huggingface/transformers";
+import { pipeline, type TextClassificationOutput } from "@huggingface/transformers";
 
 export const getSentiment = async (
   answer: string,

@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { QUESTIONS } from "@/app/const";
 import { useRouter } from "next/navigation";
 import { getSessions } from "@/lib/db";
@@ -13,7 +12,7 @@ export default function SentimentPage() {
     getSessions().then((all) => {
       const last30 = all.slice(-30);
       const avgScores = QUESTIONS.map((q) => {
-        let scores: number[] = [];
+        const scores: number[] = [];
         last30.forEach((session: any) => {
           const resp = session.responses?.[q];
           if (resp && Array.isArray(resp.sentiment)) {
